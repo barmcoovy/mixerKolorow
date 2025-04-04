@@ -5,17 +5,39 @@ namespace kolory
 {
     public partial class MainPage : ContentPage
     {
+        public int R =0;
+        public double G = 0;
+
+        public double B = 0;
 
         public MainPage()
         {
             InitializeComponent();
         }
 
-        private void Slider_ValueChanged(object sender, ValueChangedEventArgs e)
+        private void ChangeColor(double R, double G, double B)
         {
-            
+            boxViewColor.BackgroundColor = MauiColor.FromRgb(R, G, B);
         }
 
+        private void R_ValueChanged(object sender, ValueChangedEventArgs e)
+        {
+            R = Convert.ToInt32(e.NewValue);
+            ChangeColor(R, G, B);
+        }
+
+        private void G_ValueChanged(object sender, ValueChangedEventArgs e)
+        {
+            G = Convert.ToInt32(e.NewValue);
+            ChangeColor(R, G, B);
+
+        }
+        private void B_ValueChanged(object sender, ValueChangedEventArgs e)
+        {
+            B = Convert.ToInt32(e.NewValue);
+            ChangeColor(R, G, B);
+
+        }
 
 
         public double deltaE(Color color1, MauiColor color2)
@@ -28,7 +50,7 @@ namespace kolory
            double deltaA = lab1.A - lab2.A;
            double deltaB = lab1.B - lab2.B;
 
-            double deltaE = Math.Sqrt(Math.Pow(deltaL,2) + Math.Pow(deltaA, 2) + Math.Pow(deltaB, 2))
+            double deltaE = Math.Sqrt(Math.Pow(deltaL, 2) + Math.Pow(deltaA, 2) + Math.Pow(deltaB, 2));
             return deltaE;
         }
         
