@@ -11,17 +11,17 @@
         </HorizontalStackLayout>
         <VerticalStackLayout>
             <HorizontalStackLayout VerticalOptions="Center" Margin="20, 0, 0, 0">
-                <Slider Minimum="0" Maximum="255" Value="0" ValueChanged="R_ValueChanged" WidthRequest="300" Margin="20, 0, 0, 0"/>
+                <Slider x:Name="rSlider" Minimum="0" Maximum="255" Value="0" ValueChanged="Slider_ValueChanged" WidthRequest="300" Margin="20, 0, 0, 0"/>
                 <Label Text="R" FontSize="25"/>
             </HorizontalStackLayout>
 
             <HorizontalStackLayout VerticalOptions="Center" Margin="20, 0, 0, 0">
-                <Slider Minimum="0" Maximum="255" Value="0" ValueChanged="G_ValueChanged" WidthRequest="300" Margin="20, 0, 0, 0"/>
+                <Slider x:Name="gSlider" Minimum="0" Maximum="255" Value="0" ValueChanged="Slider_ValueChanged" WidthRequest="300" Margin="20, 0, 0, 0"/>
                 <Label Text="G" FontSize="25"/>
             </HorizontalStackLayout>
 
             <HorizontalStackLayout VerticalOptions="Center" Margin="20, 0, 0, 0">
-                <Slider Minimum="0" Maximum="255" Value="0" ValueChanged="B_ValueChanged" WidthRequest="300" Margin="20, 0, 0, 0"/>
+                <Slider x:Name="bSlider" Minimum="0" Maximum="255" Value="0" ValueChanged="Slider_ValueChanged" WidthRequest="300" Margin="20, 0, 0, 0"/>
                 <Label Text="B" FontSize="25"/>
             </HorizontalStackLayout>
         </VerticalStackLayout>

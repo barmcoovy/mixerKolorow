@@ -5,7 +5,7 @@ namespace kolory
 {
     public partial class MainPage : ContentPage
     {
-        public int R =0;
+        public int R = 0;
         public double G = 0;
 
         public double B = 0;
@@ -22,19 +22,19 @@ namespace kolory
 
         private void R_ValueChanged(object sender, ValueChangedEventArgs e)
         {
-            R = Convert.ToInt32(e.NewValue);
+            R = Convert.ToInt32(e.NewValue) / 255;
             ChangeColor(R, G, B);
         }
 
         private void G_ValueChanged(object sender, ValueChangedEventArgs e)
         {
-            G = Convert.ToInt32(e.NewValue);
+            G = Convert.ToInt32(e.NewValue) / 255;
             ChangeColor(R, G, B);
 
         }
         private void B_ValueChanged(object sender, ValueChangedEventArgs e)
         {
-            B = Convert.ToInt32(e.NewValue);
+            B = Convert.ToInt32(e.NewValue) / 255;
             ChangeColor(R, G, B);
 
         }
@@ -43,17 +43,17 @@ namespace kolory
         public double deltaE(Color color1, MauiColor color2)
         {
             var lab1 = RGBtoLAB(color1);
-            
+
             var lab2 = RGBtoLAB(ColorParser.ToColor(color2));
 
-           double deltaL = lab1.L - lab2.L;
-           double deltaA = lab1.A - lab2.A;
-           double deltaB = lab1.B - lab2.B;
+            double deltaL = lab1.L - lab2.L;
+            double deltaA = lab1.A - lab2.A;
+            double deltaB = lab1.B - lab2.B;
 
             double deltaE = Math.Sqrt(Math.Pow(deltaL, 2) + Math.Pow(deltaA, 2) + Math.Pow(deltaB, 2));
             return deltaE;
         }
-        
+
         public LAB RGBtoLAB(Color color)
         {
             XYZ xyz = RGBtoXYZ(color);
@@ -69,7 +69,7 @@ namespace kolory
 
 
             // zmienna R
-            if(r> 0.4045)
+            if (r > 0.4045)
             {
                 r = Math.Pow(((r + 0.055) / 1.055), 2.4);
             }
@@ -136,9 +136,9 @@ namespace kolory
 
         public double F(double t)
         {
-            if(t> 0.008856)
+            if (t > 0.008856)
             {
-                return Math.Pow(t, 1/3);
+                return Math.Pow(t, 1 / 3);
             }
             else
             {
