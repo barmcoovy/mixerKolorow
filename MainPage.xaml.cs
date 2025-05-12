@@ -5,60 +5,84 @@ namespace kolory
 {
     public partial class MainPage : ContentPage
     {
-        public int R = 0;
+        public double R = 0;
         public double G = 0;
-
         public double B = 0;
+
+        Random random = new Random();
+        MauiColor mauiColor;
+        MauiColor mauiColorRgbBoxView;
 
         public MainPage()
         {
             InitializeComponent();
+             mauiColor = MauiColor.FromRgb(random.Next(1, 255), random.Next(1, 255), random.Next(1, 255));
+
+            boxViewRandomColor.BackgroundColor = mauiColor;
         }
 
-        private void ChangeColor(double R, double G, double B)
+        private void Slider_ValueChanged(object sender, ValueChangedEventArgs e)
         {
-            boxViewColor.BackgroundColor = MauiColor.FromRgb(R, G, B);
-        }
-
-        private void R_ValueChanged(object sender, ValueChangedEventArgs e)
-        {
-            R = Convert.ToInt32(e.NewValue) / 255;
-            ChangeColor(R, G, B);
-        }
-
-        private void G_ValueChanged(object sender, ValueChangedEventArgs e)
-        {
-            G = Convert.ToInt32(e.NewValue) / 255;
-            ChangeColor(R, G, B);
-
-        }
-        private void B_ValueChanged(object sender, ValueChangedEventArgs e)
-        {
-            B = Convert.ToInt32(e.NewValue) / 255;
-            ChangeColor(R, G, B);
-
+            mauiColorRgbBoxView = MauiColor.FromRgb(rSlider.Value / 255, gSlider.Value / 255, bSlider.Value / 255); ;
+            boxViewColor.BackgroundColor = mauiColorRgbBoxView;
+;
         }
 
 
-        public double deltaE(Color color1, MauiColor color2)
-        {
-            var lab1 = RGBtoLAB(color1);
 
+        private void Submit_Clicked(object sender, EventArgs e)
+        {
+            double delta = DeltaE(mauiColor, mauiColorRgbBoxView);
+            string wynik = "";
+            
+            if(delta>0 && delta < 1)
+            {
+                deltaLbl.Text = "Rożnica prawie nie zauważalna";
+            }
+            else if(delta>1 && delta<2){
+                deltaLbl.Text = "Bardzo mała różnica, trudna do wychwycenia";
+
+            }
+            else if(delta> 2 && delta < 3)
+            {
+                deltaLbl.Text = "Mała różnica, widoczna przy porównaniu obok siebie";
+
+            }
+            else if(delta>3 && delta < 5)
+            {
+                deltaLbl.Text = "Widoczna różnica kolorów";
+
+            }
+            else if (delta>5 && delta < 10)
+            {
+                deltaLbl.Text = "Znaczna różnica";
+
+            }
+            else
+            {
+                deltaLbl.Text = "Kolory zupełnie inne";
+
+            }
+        }
+
+
+
+        public double DeltaE(MauiColor color1, MauiColor color2)
+        {
+            var lab1 = RGBtoLAB(ColorParser.ToColor(color1));
             var lab2 = RGBtoLAB(ColorParser.ToColor(color2));
 
             double deltaL = lab1.L - lab2.L;
             double deltaA = lab1.A - lab2.A;
             double deltaB = lab1.B - lab2.B;
 
-            double deltaE = Math.Sqrt(Math.Pow(deltaL, 2) + Math.Pow(deltaA, 2) + Math.Pow(deltaB, 2));
-            return deltaE;
+            return Math.Sqrt(deltaL * deltaL + deltaA * deltaA + deltaB * deltaB);
         }
 
         public LAB RGBtoLAB(Color color)
         {
             XYZ xyz = RGBtoXYZ(color);
-            LAB lab = XYZToLAB(xyz);
-            return lab;
+            return XYZtoLAB(xyz);
         }
 
         public XYZ RGBtoXYZ(Color color)
@@ -67,84 +91,43 @@ namespace kolory
             double g = color.G / 255.0;
             double b = color.B / 255.0;
 
-
-            // zmienna R
-            if (r > 0.4045)
-            {
-                r = Math.Pow(((r + 0.055) / 1.055), 2.4);
-            }
-            else
-            {
-                r = r / 12.92;
-            }
-
-            //zmienna G
-            if (g > 0.4045)
-            {
-                g = Math.Pow(((g + 0.055) / 1.055), 2.4);
-            }
-            else
-            {
-                g = g / 12.92;
-            }
-
-            //zmienna B
-            if (b > 0.4045)
-            {
-                b = Math.Pow(((b + 0.055) / 1.055), 2.4);
-            }
-            else
-            {
-                b = b / 12.92;
-            }
-
+            r = (r > 0.04045) ? Math.Pow((r + 0.055) / 1.055, 2.4) : r / 12.92;
+            g = (g > 0.04045) ? Math.Pow((g + 0.055) / 1.055, 2.4) : g / 12.92;
+            b = (b > 0.04045) ? Math.Pow((b + 0.055) / 1.055, 2.4) : b / 12.92;
 
             double X = (r * 0.4124564) + (g * 0.3575761) + (b * 0.1804375);
             double Y = (r * 0.2126729) + (g * 0.7151522) + (b * 0.0721750);
             double Z = (r * 0.0193339) + (g * 0.1191920) + (b * 0.9503041);
 
-
-            XYZ xyz = new XYZ(X, Y, Z);
-
-            return xyz;
+            return new XYZ(X * 100, Y * 100, Z * 100); // skalowanie do 0-100
         }
 
-
-        public LAB XYZToLAB(XYZ xyz)
+        public LAB XYZtoLAB(XYZ xyz)
         {
             double Xr = 95.047;
             double Yr = 100.000;
             double Zr = 108.883;
 
-            double x = xyz.X;
-            double y = xyz.Y;
-            double z = xyz.Z;
+            double x = xyz.X / Xr;
+            double y = xyz.Y / Yr;
+            double z = xyz.Z / Zr;
 
-            double fx = F(x);
-            double fy = F(y);
-            double fz = F(z);
+            double fx = f(x);
+            double fy = f(y);
+            double fz = f(z);
 
-
-            double L = (166 * fy) - 16;
+            double L = (116 * fy) - 16;
             double A = 500 * (fx - fy);
             double B = 200 * (fy - fz);
 
-            LAB lab = new LAB(L, A, B);
-            return lab;
+            return new LAB(L, A, B);
         }
 
-
-        public double F(double t)
+        private double f(double t)
         {
-            if (t > 0.008856)
-            {
-                return Math.Pow(t, 1 / 3);
-            }
-            else
-            {
-                return ((7.787 * t) + (16 / 166));
-            }
+            return (t > 0.008856) ? Math.Pow(t, 1.0 / 3.0) : ((7.787 * t) + (16.0 / 116.0));
         }
+
     }
 
 }
